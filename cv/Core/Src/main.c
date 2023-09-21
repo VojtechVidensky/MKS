@@ -97,10 +97,30 @@ int main(void)
   while (1)
   {
 
+	  /*
 	  LL_GPIO_SetOutputPin(LD2_GPIO_Port, LD2_Pin);
 	  LL_mDelay(200);
-	  LL_GPIO_ResetOutputPin(LD2_GPIO_Port, LD2_Pin); /*GPIOA->BRR = (1<<5); kratší alternativa*/
+	  LL_GPIO_ResetOutputPin(LD2_GPIO_Port, LD2_Pin); GPIOA->BRR = (1<<5); kratší alternativa
 	  LL_mDelay(200);
+	  */
+
+	  uint8_t i=0;
+	  uint8_t s=0;
+	  int pole[32] = {1,0,1,0,1,0,0,1,1,1,0,1,1,1,0,1,1,1,0,0,1,0,1,0,1,0,0,0,0,0,0,0};
+	  for (i;i<32;i++)
+	  {
+		  s = pole[i];
+		  if (s==1)
+		  {
+			  LL_GPIO_SetOutputPin(LD2_GPIO_Port, LD2_Pin);
+		  }
+
+		  else
+		  {
+			  LL_GPIO_ResetOutputPin(LD2_GPIO_Port, LD2_Pin);
+		  }
+		  LL_mDelay(200);
+	  }
 
 
 
