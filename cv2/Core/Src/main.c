@@ -32,10 +32,10 @@ void tlacitka(void);
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-	#define SW_READ 40
-	#define LED_TIME_BLINK 300
-	#define LED_TIME_SHORT 100
-	#define LED_TIME_LONG 1000
+#define LED_TIME_BLINK 300
+#define LED_TIME_SHORT 100
+#define LED_TIME_LONG 1000
+#define SW_READ 40
 
 /* USER CODE END PD */
 
@@ -60,7 +60,7 @@ static void MX_USART2_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-	volatile uint32_t Tick;
+volatile uint32_t Tick;
 /* USER CODE END 0 */
 
 /**
@@ -91,11 +91,10 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
-  LL_SYSTICK_EnableIT();
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-
+  LL_SYSTICK_EnableIT();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -306,30 +305,30 @@ void blikac(void)
 
 void tlacitka(void)
 {
-	static uint32_t old_s1, old_s2, off_time1, off_time2;
+	static uint32_t old_s1, old_s2, off_time, wait=0;
 	uint32_t new_s1=LL_GPIO_IsInputPinSet(S1_GPIO_Port, S1_Pin);
 	uint32_t new_s2=LL_GPIO_IsInputPinSet(S0_GPIO_Port, S0_Pin);
 
-	if(old_s1 && !new_s1)
+	if(Tick > wait + SW_READ)
 	{
-		off_time1=Tick + LED_TIME_SHORT;
-		LL_GPIO_SetOutputPin(Led2_GPIO_Port,Led2_Pin);
-	}
-	old_s1=new_s1;
-	if(Tick > off_time1)
-	{
-		LL_GPIO_ResetOutputPin(Led2_GPIO_Port,Led2_Pin);
-	}
+		if(old_s1 && !new_s1)
+		{
+			off_time=Tick + LED_TIME_SHORT;
+			LL_GPIO_SetOutputPin(Led2_GPIO_Port,Led2_Pin);
+		}
+		old_s1=new_s1;
 
-	if(old_s2 && !new_s2)
-	{
-		off_time2=Tick + LED_TIME_LONG;
-		LL_GPIO_SetOutputPin(Led2_GPIO_Port,Led2_Pin);
-	}
-	old_s2=new_s2;
-	if(Tick > off_time2)
-	{
-		LL_GPIO_ResetOutputPin(Led2_GPIO_Port,Led2_Pin);
+		if(old_s2 && !new_s2)
+		{
+			off_time=Tick + LED_TIME_LONG;
+			LL_GPIO_SetOutputPin(Led2_GPIO_Port,Led2_Pin);
+		}
+		old_s2=new_s2;
+		if(Tick > off_time)
+		{
+			LL_GPIO_ResetOutputPin(Led2_GPIO_Port,Led2_Pin);
+		}
+		wait=Tick;
 	}
 }
 /* USER CODE END 4 */
