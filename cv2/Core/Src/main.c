@@ -36,6 +36,7 @@ void tlacitka(void);
 #define LED_TIME_SHORT 100
 #define LED_TIME_LONG 1000
 #define SW_READ 40
+#define SW_READ2 5
 
 /* USER CODE END PD */
 
@@ -294,41 +295,49 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 void blikac(void)
+{
+	static uint32_t delay;
+	if (Tick > delay + LED_TIME_BLINK)
 	{
-		static uint32_t delay;
-		if (Tick > delay + LED_TIME_BLINK)
-		{
-			LL_GPIO_TogglePin(Led1_GPIO_Port,Led1_Pin);
-			delay = Tick;
-		}
+		LL_GPIO_TogglePin(Led1_GPIO_Port,Led1_Pin);
+		delay = Tick;
 	}
+}
 
 void tlacitka(void)
 {
-	static uint32_t old_s1, old_s2, off_time, wait=0;
-	uint32_t new_s1=LL_GPIO_IsInputPinSet(S1_GPIO_Port, S1_Pin);
-	uint32_t new_s2=LL_GPIO_IsInputPinSet(S0_GPIO_Port, S0_Pin);
+	static uint32_t off_time, wait=0;
+	static uint16_t debounce1 = 0xFFFF, debounce2 = 0xFFFF;
 
-	if(Tick > wait + SW_READ)
+	if(Tick > wait + SW_READ2)
 	{
-		if(old_s1 && !new_s1)
+		debounce1 <<= 1;
+		debounce2 <<= 1;
+		if(LL_GPIO_IsInputPinSet(S1_GPIO_Port, S1_Pin)==0)
+		{
+			debounce1|=0x0001;
+		}
+		if(LL_GPIO_IsInputPinSet(S0_GPIO_Port, S0_Pin)==0)
+		{
+			debounce2|=0x0001;
+		}
+		if(debounce1 == 0x7FFF)
 		{
 			off_time=Tick + LED_TIME_SHORT;
 			LL_GPIO_SetOutputPin(Led2_GPIO_Port,Led2_Pin);
 		}
-		old_s1=new_s1;
-
-		if(old_s2 && !new_s2)
+		if(debounce2 == 0x7FFF)
 		{
 			off_time=Tick + LED_TIME_LONG;
 			LL_GPIO_SetOutputPin(Led2_GPIO_Port,Led2_Pin);
 		}
-		old_s2=new_s2;
+
+		wait=Tick;
 		if(Tick > off_time)
 		{
 			LL_GPIO_ResetOutputPin(Led2_GPIO_Port,Led2_Pin);
 		}
-		wait=Tick;
+
 	}
 }
 /* USER CODE END 4 */
