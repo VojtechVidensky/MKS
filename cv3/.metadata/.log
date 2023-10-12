@@ -1,0 +1,21 @@
+!SESSION 2023-10-12 09:53:03.028 -----------------------------------------------
+eclipse.buildId=Version 1.13.1
+java.version=17.0.6
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_US
+Command-line arguments:  -os win32 -ws win32 -arch x86_64
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 4 4 2023-10-12 09:53:37.685
+!MESSAGE CubeMX plugin appears to be active, Log4j initialization might be too late.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2023-10-12 09:53:37.696
+!MESSAGE Log4j2 initialized with config file C:\Temp\MKS\cv3\.metadata\.log4j2.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2023-10-12 09:53:41.383
+!MESSAGE Started RMI Server, listening on port 41337
+
+!ENTRY com.st.stm32cube.ide.common.services 4 0 2023-10-12 10:03:20.509
+!MESSAGE Not able to get any active project build configuration.
+
+!ENTRY org.eclipse.cdt.core 1 0 2023-10-12 10:04:27.726
+!MESSAGE Indexed 'cv3' (23 sources, 83 headers) in 2.93 sec: 4,577 declarations; 26,552 references; 0 unresolved inclusions; 1 syntax errors; 2 unresolved names (0.0064%)
