@@ -18,10 +18,11 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include <stdio.h>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdio.h>
+#include <string.h>
 
 /* USER CODE END Includes */
 
@@ -58,8 +59,7 @@ static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
 static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
-static void uart_byte_available(uint8_t c);
-void uart_process_command(char cmd[]);
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -71,9 +71,41 @@ int _write(int file, char const *buf, int n)
 	return n;
 }
 
-void uart_process_command(char cmd[])
+static void uart_process_command(char cmd[])
 {
-	printf("prijato: '%s' \n", cmd);
+	char *token;
+	uint8_t value;
+	uint8_t value_array[16];
+	uint16_t addr;
+	token = strtok(cmd," ");
+	if(strcasecmp(token,"test")==0)
+	{
+		printf("OK\n");
+	}
+
+	else if(strcasecmp(token,"LED1")==0)
+	{
+		token=strtok(NULL, " ");
+		if(strcasecmp(token,"ON")==0) HAL_GPIO_WritePin(LED1_GPIO_Port,LED1_Pin,1);
+		else if(strcasecmp(token, "OFF")==0) HAL_GPIO_WritePin(LED1_GPIO_Port,LED1_Pin,0);
+		printf("OK\n");
+	}
+	else if(strcasecmp(token,"LED2")==0)
+	{
+			token=strtok(NULL, " ");
+			if(strcasecmp(token,"ON")==0) HAL_GPIO_WritePin(LED2_GPIO_Port,LED2_Pin,1);
+			else if(strcasecmp(token, "OFF")==0) HAL_GPIO_WritePin(LED2_GPIO_Port,LED2_Pin,0);
+			printf("OK\n");
+	}
+	else if(strcasecmp(token,"STATUS")==0)
+	{
+			printf("Status LED1\n\t %d",HAL_GPIO_ReadPin(LED1_GPIO_Port, LED1_Pin));
+			if(HAL_GPIO_ReadPin(LED1_GPIO_Port, LED1_Pin)==1) printf("=ON\n");
+			else printf("=OFF\n");
+			printf("Status LED2\n\t %d",HAL_GPIO_ReadPin(LED2_GPIO_Port, LED2_Pin));
+			if(HAL_GPIO_ReadPin(LED2_GPIO_Port, LED2_Pin)==1) printf("=ON\n");
+			else printf("=OFF\n");
+	}
 }
 
 static void uart_byte_available(uint8_t c)
@@ -122,11 +154,11 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
-  MX_GPIO_Init();
   MX_DMA_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
   HAL_UART_Receive_DMA(&huart2, uart_rx_buf, RX_BUFFER_LEN);
+  MX_GPIO_Init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -143,9 +175,9 @@ int main(void)
 	  }
 
     /* USER CODE END WHILE */
-  }
-    /* USER CODE BEGIN 3 */
 
+    /* USER CODE BEGIN 3 */
+  }
   /* USER CODE END 3 */
 }
 
@@ -253,9 +285,13 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOF_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, LED1_Pin|LD2_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : B1_Pin */
   GPIO_InitStruct.Pin = B1_Pin;
@@ -263,12 +299,19 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : LD2_Pin */
-  GPIO_InitStruct.Pin = LD2_Pin;
+  /*Configure GPIO pins : LED1_Pin LD2_Pin */
+  GPIO_InitStruct.Pin = LED1_Pin|LD2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : LED2_Pin */
+  GPIO_InitStruct.Pin = LED2_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(LED2_GPIO_Port, &GPIO_InitStruct);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
