@@ -65,9 +65,11 @@ static void MX_USART3_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-static uint8_t buff[4];
+
 void step(int x, int y, bool btn)
 {
+	uint8_t buff[4];
+
 	buff[0] = btn;      // stiskni leve tlacitko
 	buff[1] = (int8_t)(x);    // posun X
 	buff[2] = (int8_t)(y);    // posun Y
